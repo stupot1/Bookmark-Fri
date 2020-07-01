@@ -3,13 +3,28 @@ require 'sinatra/base'
 require './lib/bookmarks.rb'
 
 class App < Sinatra::Base
+  
+  enable :sessions
+
   get '/' do
-  erb :index
+    @url = session[:url]
+    session[:url] = nil
+    erb :index
   end
 
   get '/bookmarks' do
     @bookmarks = Bookmarks.all
     erb :bookmarks
+  end
+
+  post '/add_submit' do
+    Bookmarks.add(params[:url])
+    session[:url] = params[:url]
+    redirect '/'
+  end
+
+  get '/add' do
+    erb :add
   end
 
   # start the server if ruby file executed directly
