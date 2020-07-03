@@ -7,8 +7,8 @@ class App < Sinatra::Base
   enable :sessions
 
   get '/' do
-    @url = session[:url]
-    session[:url] = nil
+    @title = session[:title]
+    session[:title] = nil
     erb :index
   end
 
@@ -18,8 +18,8 @@ class App < Sinatra::Base
   end
 
   post '/add_submit' do
-    Bookmarks.add(params[:url])
-    session[:url] = params[:url]
+    Bookmarks.add(params[:url], params[:title])
+    session[:title] = params[:title]
     redirect '/'
   end
 

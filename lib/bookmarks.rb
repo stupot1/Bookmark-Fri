@@ -2,24 +2,23 @@ require 'pg'
 
 class Bookmarks
 
+  attr_reader :url, :id, :title
+
+  def initialize(id, url, title)
+    @id = id
+    @url = url
+    @title = title
+  end
+
   def self.all
 
-      con = db_connect
-      rs = con.exec "SELECT * FROM bookmarks"
-      array = []
-  
-      rs.each do |row|
-        array << row["url"]
-      end
-      db_con_cleanup(rs, con)
-      array
+      rs = db_connect.exec "SELECT * FROM bookmarks"
+      rs.map { |bookmark| Bookmarks.new(bookmark['id'], bookmark['url'], bookmark['title'])}
 
   end
 
-  def self.add(input)
-      con = db_connect
-      rs = con.exec "INSERT INTO bookmarks (url) VALUES ('#{input}')"
-      db_con_cleanup(rs, con)
+  def self.add(url, title)
+      db_connect.exec "INSERT INTO bookmarks (url, title) VALUES ('#{url}', '#{title}')"
   end
 
   private
@@ -34,11 +33,6 @@ class Bookmarks
       PG.connect :dbname => 'bookmark_manager', :user => user, :password => password  
     end
 
-  end
-
-  def self.db_con_cleanup(rs, con)
-    rs.clear if rs
-    con.close if con
   end
 
 end
